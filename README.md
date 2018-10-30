@@ -25,3 +25,25 @@ Misc powerCLI notes
 
 ## Get VM Location In Datastore
 `(Get-VM <VM Name>).ExtensionData.Config.Files`
+
+## Get DataCenter Info (Cluster, VMHost, VM Names)
+*won't return DataCenters with 0 VMs
+`foreach($dc in Get-Datacenter){
+
+    foreach($cluster in Get-Cluster -Location $dc){
+
+        foreach($esx in Get-VMHost -Location $cluster){
+
+            Get-VM -Location $esx |
+
+            Select @{N='Datacenter';E={$dc.Name}},
+
+                @{N='Cluster';E={$cluster.Name}},
+
+                @{N='VMhost';E={$esx.Name}},Name
+
+        }
+
+    }
+
+}`
