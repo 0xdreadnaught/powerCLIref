@@ -38,3 +38,6 @@ Misc powerCLI notes
         }
     }
 }`
+
+## Get A Log File From A Host In Searchable Dialog
+`(Get-VMHost | Select -Index 3 | Get-Log -Key * ).Entries | Where-Object -FilterScript {$_ -like "*warning*"} | out-gridview`
