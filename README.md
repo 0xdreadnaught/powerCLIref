@@ -42,5 +42,23 @@ Misc powerCLI notes
 ## Get A Log File From A Host In Searchable Dialog
 `(Get-VMHost | Select -Index 3 | Get-Log -Key * ).Entries | Where-Object -FilterScript {$_ -like "*warning*"} | out-gridview`
 
+## Get time on all ESXi hosts
+`get-vmhost | select Name,@{Name="Time";Expression={(get-view $_.ExtensionData.configManager.DateTimeSystem).QueryDateTime()}}`
+
+## Change NTP server on all ESXi hosts
+`$hosts = "ESXi","hosts","here"
+
+$ntpservers = "ntp","servers","here"
+foreach ($esx in $hosts) {
+    $configuredServers = Get-VMHostNtpServer -VMHost $esx
+    if(Compare-Object -ReferenceObject $ntpservers -DifferenceObject $configuredServers -PassThru){
+        Remove-VMHostNtpServer -VMHost $esx -NtpServer $configuredServers -Confirm:$false
+        Add-VmHostNtpServer -NtpServer $ntpservers -VMHost $esx | Out-Null
+        Get-VMHostService -VMHost $esx | where {$_.key -eq "ntpd"} | Set-VMHostService -policy "on" -Confirm:$false
+        Get-VmHostService -VMHost $esx | Where-Object {$_.key -eq "ntpd"} | Restart-VMHostService -Confirm:$false | Out-Null
+        write "NTP Server was changed on $Host"
+    }
+}`
+
 ## Get All Logs From A VMHost And Show In Descending Order In Searchable Dialog
 `(Get-VMHost -Name <VMHost Name> | Get-Log -Key * ).Entries | Sort-Object -Property string -Descending |out-gridview`
