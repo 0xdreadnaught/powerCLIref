@@ -42,6 +42,17 @@ Misc powerCLI notes
 ## Get A Log File From A Host In Searchable Dialog
 `(Get-VMHost | Select -Index 3 | Get-Log -Key * ).Entries | Where-Object -FilterScript {$_ -like "*warning*"} | out-gridview`
 
+## Get Lockdown status on all ESXi hosts
+`Get-VMHost | Select Name,@{N="Lockdown";E={$_.Extensiondata.Config.LockdownMode}}`
+
+# Set Lockdown status on all ESXi hosts
+```
+$level = "lockdownDisabled" # or "lockdownNormal" or "lockdownStrict"
+$vmhost = Get-VMHost | Get-View
+$lockdown = Get-View $vmhost.ConfigManager.HostAccessManager
+$lockdown.ChangeLockdownMode($level)
+```
+
 ## Enable SSH on all ESXi hosts
 `Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM-SSH" } | Start-VMHostService`
 
