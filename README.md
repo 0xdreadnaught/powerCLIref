@@ -65,7 +65,8 @@ foreach ($esx in $hosts) {
         Get-VmHostService -VMHost $esx | Where-Object {$_.key -eq "ntpd"} | Restart-VMHostService -Confirm:$false | Out-Null
         write "NTP Server was changed on $Host"
     }
-}```
+}
+```
 
 ## Get All Logs From A VMHost And Show In Descending Order In Searchable Dialog
 `(Get-VMHost -Name <VMHost Name> | Get-Log -Key * ).Entries | Sort-Object -Property string -Descending |out-gridview`
