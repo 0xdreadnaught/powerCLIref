@@ -42,11 +42,18 @@ Misc powerCLI notes
 ## Get A Log File From A Host In Searchable Dialog
 `(Get-VMHost | Select -Index 3 | Get-Log -Key * ).Entries | Where-Object -FilterScript {$_ -like "*warning*"} | out-gridview`
 
+## Enable SSH on all ESXi hosts
+`Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM-SSH" } | Start-VMHostService`
+
+## Enable ESXi Shell on all ESXi hosts
+`Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM" } | Start-VMHostService`
+
 ## Get time on all ESXi hosts
 `get-vmhost | select Name,@{Name="Time";Expression={(get-view $_.ExtensionData.configManager.DateTimeSystem).QueryDateTime()}}`
 
 ## Change NTP server on all ESXi hosts
-```$hosts = "ESXi","hosts","here"
+```
+$hosts = "ESXi","hosts","here"
 
 $ntpservers = "ntp","servers","here"
 foreach ($esx in $hosts) {
